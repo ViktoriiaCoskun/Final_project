@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<table class="table">
+   <thead>
+     <tr>
+       <th scope="col">Data</th>
+       <th scope="col">Title</th>
+       <th scope="col">Body</th>
+       <th scope="col"></th>
+     </tr>
+   </thead>
+   <tbody>
+       {% for post in drafts %}
+     <tr>
+       <td>
+           {{ post.pub_date.strftime('%Y-%m-%d') }}
+       </td>
+       <td>
+           <a href="{{ url_for('entry_form', entry_id=post.id) }}">
+               {{ post.title }}
+           </a>
+       </td>
+       <td>{{ post.body|truncate(100, true) }}</td>
+     </tr>
+     {% endfor %}
+   </tbody>
+ </table>
+
+{% endblock %}

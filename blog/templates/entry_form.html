@@ -1,8 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="card h-100">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info mt-3" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
 <h3>
-   Додай нову публікацію
+   add new Post
 </h3>
 
 <form action="" method="POST">

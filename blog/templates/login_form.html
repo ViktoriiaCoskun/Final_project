@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>
+    Sign in
+</h3>
+<div class="card h-100">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-info mt-3" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+{% if errors %}
+   {{ errors.username }}
+{% endif %}
+<form action="" method="POST">
+  {{form.hidden_tag()}}
+   <div class="form-group">
+       <label for="title">User name</label>
+       {% if errors and errors.username %}
+           {{ form.username(class_="form-control is-invalid") }}
+       {% else %}
+           {{ form.username(class_="form-control") }}
+       {% endif %}
+       <div class="invalid-feedback">{{ errors.username|join(' ') }}</div>
+
+   </div>
+   <div class="form-group">
+       <label for="body">Password</label>
+
+       {% if errors and errors.password %}
+           {{ form.password(class_="form-control is-invalid") }}
+       {% else %}
+           {{ form.password(class_="form-control") }}
+       {% endif %}
+       <div class="invalid-feedback">{{ errors.password|join(' ') }}</div>
+
+   </div>
+   <button type="submit" class="btn btn-primary mt-5">Sign in</button>
+</form>
+
+{% endblock %}
