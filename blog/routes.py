@@ -10,42 +10,46 @@ from flask_login import login_required,LoginManager,login_user
 
 @app.route("/")
 def index():
-   #generate_entries(10)
+   generate_entries(10)
    all_posts = Entry.query.filter_by(is_published=True).order_by(Entry.pub_date.desc())
    return render_template("homepage.html", all_posts=all_posts)
 
 @app.route("/entry_form/<int:entry_id>", methods=["GET", "POST"])
 def entry_form(entry_id):
-   if entry_id==0:
-        form = EntryForm()
+    if session.get('logged_in'):
+        if entry_id==0:
+                form = EntryForm()
+                errors = None
+                if request.method == 'POST':
+                    if form.validate_on_submit():
+                        entry = Entry()
+                        entry.title=form.title.data
+                        entry.body=form.body.data
+                        entry.is_published=form.is_published.data
+                            
+                        db.session.add(entry)
+                        db.session.commit()
+                        flash('Record was successfully created')
+                        return redirect(url_for('index'))
+                    else:
+                        errors = form.errors
+                return render_template("entry_form.html", form=form, errors=errors)
+        entry = Entry.query.filter_by(id=entry_id).first_or_404()
+        form = EntryForm(obj=entry)
         errors = None
         if request.method == 'POST':
             if form.validate_on_submit():
-                entry = Entry()
-                entry.title=form.title.data
-                entry.body=form.body.data
-                entry.is_published=form.is_published.data
-                    
-                db.session.add(entry)
+                form.populate_obj(entry)
                 db.session.commit()
-                flash('Record was successfully created')
+                flash('Record was successfully updated')
                 return redirect(url_for('index'))
             else:
                 errors = form.errors
         return render_template("entry_form.html", form=form, errors=errors)
-   entry = Entry.query.filter_by(id=entry_id).first_or_404()
-   form = EntryForm(obj=entry)
-   errors = None
-   if request.method == 'POST':
-       if form.validate_on_submit():
-           form.populate_obj(entry)
-           db.session.commit()
-           flash('Record was successfully updated')
-           return redirect(url_for('index'))
-       else:
-           errors = form.errors
-   return render_template("entry_form.html", form=form, errors=errors)
-    
+    else:
+       flash('Login required.', 'error')
+       return redirect(url_for('login', next=request.path))
+   
 @app.route("/delete-post/<int:entry_id>", methods=["GET", "POST"])
 #@login_required
 def delete_entry(entry_id):
